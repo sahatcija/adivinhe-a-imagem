@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'imagens/foto7.jpg',  // Exemplo 7
         'imagens/foto8.jpg', // Exemplo 8
         'imagens/foto9.jpg'  // Exemplo 9
+        'imagens/foto10.jpg',  // Exemplo 10
+        'imagens/foto11.jpg', // Exemplo 11
+        'imagens/foto12.jpg'  // Exemplo 12
     ];
 
     // Função para embaralhar um array (algoritmo Fisher-Yates)
