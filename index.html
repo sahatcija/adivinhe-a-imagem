@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Adivinhar a Carta</title>
+    <title>Jogo da Memória</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Qual nome da delícia?</h1>
-    <p>Clique em uma carta para revelar a imagem e adivinhe qual a delícia da Boleria D'avó!</p>
+    <h1><center>Jogo da Memória<br>Boleria D'avó</center></h1>
+    <p>Encontre todos os pares de cartas!</p>
+
+    <!-- Adicionamos um container para a mensagem de vitória -->
+    <div id="win-message" class="hidden">
+        <h2>Parabéns, você venceu!</h2>
+    </div>
 
     <div id="game-board">
         <!-- As cartas serão geradas aqui pelo JavaScript -->
@@ -18,5 +23,7 @@
     <button id="restart-button">Reiniciar Jogo</button>
 
     <script src="script.js"></script>
+
+
 </body>
 </html>
