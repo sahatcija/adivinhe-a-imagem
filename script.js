@@ -1,83 +1,132 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const gameBoard = document.getElementById('game-board');
-    const restartButton = document.getElementById('restart-button');
-
     // =================================================================
     // IMPORTANTE: EDITE A LISTA DE IMAGENS AQUI!
     // =================================================================
-    // Coloque o caminho para as suas 9 imagens.
-    // Se as imagens estiverem na mesma pasta que o arquivo HTML,
-    // basta colocar o nome do arquivo, como 'minha-foto.jpg'.
-    // Se estiverem em uma subpasta chamada "imagens", use 'imagens/minha-foto.jpg'.
-    
-    const images = [
-        'imagens/foto1.jpg', // Exemplo 1
-        'imagens/foto2.jpg', // Exemplo 2
-        'imagens/foto3.jpg',  // Exemplo 3
-        'imagens/foto4.jpg',  // Exemplo 4
-        'imagens/foto5.jpg',  // Exemplo 5
-        'imagens/foto6.jpg',  // Exemplo 6
-        'imagens/foto7.jpg',  // Exemplo 7
-        'imagens/foto8.jpg', // Exemplo 8
-        'imagens/foto9.jpg',  // Exemplo 9
-        'imagens/foto10.jpg',  // Exemplo 10
-        'imagens/foto11.jpg', // Exemplo 11
-        'imagens/foto12.jpg'  // Exemplo 12
+    // Para 12 cartas, você precisa de 6 imagens únicas.
+    // O jogo irá duplicá-las para criar os pares.
+    const uniqueImages = [
+        { id: 'gato', src: 'imagens/foto1.jpg' },
+        { id: 'cachorro', src: 'imagens/foto2.jpg' },
+        { id: 'floresta', src: 'imagens/foto3.jpg' },
+        { id: 'montanha', src: 'imagens/foto4.jpg' },
+        { id: 'lago', src: 'imagens/foto5.jpg' },
+        { id: 'ponte', src: 'imagens/foto6.jpg' }
+        // Se usar suas imagens:
+        // { id: 'nome-do-par-1', src: 'imagens/foto1.jpg' },
+        // { id: 'nome-do-par-2', src: 'imagens/foto2.jpg' },
     ];
 
-    // Função para embaralhar um array (algoritmo Fisher-Yates)
-    // Isso garante que a posição das cartas mude a cada jogo.
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
+    const gameBoard = document.getElementById('game-board');
+    const restartButton = document.getElementById('restart-button');
+    const winMessage = document.getElementById('win-message');
+    
+    // Variáveis de estado do jogo
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let firstCard, secondCard;
+    let matchedPairs = 0;
 
-    // Função para criar e iniciar o jogo
+    // Função para criar o tabuleiro
     function createGameBoard() {
-        // Limpa o tabuleiro antes de criar novas cartas (útil para reiniciar)
-        gameBoard.innerHTML = ''; 
+        // Reseta o estado do jogo para um novo começo
+        resetGame();
+        
+        // Duplica as imagens para criar os pares e embaralha
+        const gameCards = [...uniqueImages, ...uniqueImages]
+            .sort(() => 0.5 - Math.random());
 
-        // Embaralha as imagens para que o jogo seja diferente a cada vez
-        const shuffledImages = shuffle([...images]);
-
-        shuffledImages.forEach(imageSrc => {
-            // Cria os elementos da carta
+        gameCards.forEach(item => {
             const card = document.createElement('div');
             card.classList.add('card');
+            // Adiciona um 'data-attribute' para identificar o par
+            card.dataset.id = item.id; 
 
-            const cardInner = document.createElement('div');
-            cardInner.classList.add('card-inner');
-
-            const cardFront = document.createElement('div');
-            cardFront.classList.add('card-face', 'card-front');
-            // cardFront.innerHTML = '?'; // Conteúdo da frente da carta
-
-            const cardBack = document.createElement('div');
-            cardBack.classList.add('card-face', 'card-back');
-            cardBack.style.backgroundImage = `url('${imageSrc}')`; // Define a imagem no verso
-
-            // Monta a estrutura da carta
-            cardInner.appendChild(cardFront);
-            cardInner.appendChild(cardBack);
-            card.appendChild(cardInner);
-
-            // Adiciona a carta ao tabuleiro
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-face card-front">?</div>
+                    <div class="card-face card-back" style="background-image: url('${item.src}')"></div>
+                </div>
+            `;
+            
+            card.addEventListener('click', flipCard);
             gameBoard.appendChild(card);
-
-            // Adiciona o evento de clique para virar a carta
-            card.addEventListener('click', () => {
-                card.classList.toggle('is-flipped');
-            });
         });
     }
 
-    // Adiciona o evento de clique ao botão de reiniciar
-    restartButton.addEventListener('click', createGameBoard);
+    // A função principal que é chamada ao clicar em uma carta
+    function flipCard() {
+        // Se o tabuleiro estiver "trancado" ou a carta já for um par, não faz nada
+        if (lockBoard || this.classList.contains('is-matched')) return;
+        // Se clicar na mesma carta duas vezes, não faz nada
+        if (this === firstCard) return;
 
-    // Inicia o jogo pela primeira vez quando a página carrega
-    createGameBoard();
+        this.classList.add('is-flipped');
+
+        if (!hasFlippedCard) {
+            // Primeiro clique
+            hasFlippedCard = true;
+            firstCard = this;
+            return;
+        }
+        
+        // Segundo clique
+        secondCard = this;
+        lockBoard = true; // Tranca o tabuleiro para não virar uma terceira carta
+
+        checkForMatch();
+    }
+
+    // Verifica se as duas cartas viradas são um par
+    function checkForMatch() {
+        // A verificação é feita pelo 'data-id'
+        const isMatch = firstCard.dataset.id === secondCard.dataset.id;
+
+        isMatch ? disableCards() : unflipCards();
+    }
+
+    // Se for um par, desabilita as cartas
+    function disableCards() {
+        firstCard.removeEventListener('click', flipCard);
+        secondCard.removeEventListener('click', flipCard);
+        firstCard.classList.add('is-matched');
+        secondCard.classList.add('is-matched');
+
+        matchedPairs++;
+        // Verifica se o jogo acabou
+        if (matchedPairs === uniqueImages.length) {
+            setTimeout(() => {
+                winMessage.classList.remove('hidden');
+            }, 500);
+        }
+
+        resetBoard();
+    }
+
+    // Se não for um par, vira as cartas de volta
+    function unflipCards() {
+        setTimeout(() => {
+            firstCard.classList.remove('is-flipped');
+            secondCard.classList.remove('is-flipped');
+            resetBoard();
+        }, 1200); // 1.2 segundos para o jogador memorizar
+    }
+
+    // Reseta as variáveis de jogada
+    function resetBoard() {
+        [hasFlippedCard, lockBoard] = [false, false];
+        [firstCard, secondCard] = [null, null];
+    }
+    
+    // Reseta o jogo inteiro
+    function resetGame() {
+        gameBoard.innerHTML = '';
+        winMessage.classList.add('hidden');
+        matchedPairs = 0;
+        resetBoard();
+    }
+
+    // Inicia o jogo
+    restartButton.addEventListener('click', createGameBoard);
+    createGameBoard(); // Inicia o jogo pela primeira vez
 });
