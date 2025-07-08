@@ -22,7 +22,7 @@ h1 {
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     width: 90%;
-    max-width: 600px;
+    max-width: 500px;
     margin-top: 20px;
     margin-bottom: 20px;
 }
