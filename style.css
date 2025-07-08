@@ -6,31 +6,39 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #f0f8ff;
-    color: #333;
+    background-color: #2c3e50; /* Cor de fundo mais escura */
+    color: #ecf0f1;
     margin: 0;
 }
 
 h1 {
-    color: #0056b3;
+    color: #1abc9c; /* Verde-água */
 }
 
 /* O tabuleiro que segura as cartas */
 #game-board {
     display: grid;
+    /* Mantemos a grade de 4x3 para 12 cartas */
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px; /* Espaço entre as cartas */
+    gap: 15px;
     width: 90%;
     max-width: 600px;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* Estilo de cada carta (o container da animação) */
 .card {
     background-color: transparent;
-    aspect-ratio: 1 / 1; /* Mantém a carta quadrada */
-    perspective: 1000px; /* Efeito 3D para a virada */
+    aspect-ratio: 1 / 1;
+    perspective: 1000px;
     cursor: pointer;
+}
+
+/* NOVO: Estilo para cartas que já formaram par */
+.card.is-matched {
+    cursor: default; /* Remove o cursor de "mãozinha" */
+    opacity: 0.7; /* Deixa a carta um pouco transparente */
 }
 
 /* Container interno que realmente vira */
@@ -45,52 +53,42 @@ h1 {
     border-radius: 10px;
 }
 
-/* Quando a carta é clicada, o .card-inner vira */
 .card.is-flipped .card-inner {
     transform: rotateY(180deg);
 }
 
-/* As duas faces da carta (frente e verso) */
 .card-face {
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden; /* Para Safari */
-    backface-visibility: hidden; /* Esconde o lado de trás da face */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     border-radius: 10px;
 }
 
-/* Estilo da frente da carta (o que você vê primeiro) */
+/* Verso da carta (pode ser seu 'verso-carta.png' ou um gradiente) */
 .card-front {
-    /* AQUI ESTÁ A MUDANÇA PRINCIPAL */
     background-image: url('imagens/verso-carta.jpg'); /* <<< COLOQUE O NOME DO SEU ARQUIVO AQUI */
     background-size: cover; /* Faz a imagem cobrir toda a carta */
     background-position: center; /* Centraliza a imagem */
-
-    /* As propriedades abaixo continuam, mas não são mais tão importantes se você não for exibir o '?' */
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
 }
 
-/* Estilo do verso da carta (a imagem) */
+/* Frente da carta (a imagem) */
 .card-back {
     background-color: #fff;
     color: white;
-    transform: rotateY(180deg); /* O verso já começa virado */
-    background-size: cover; /* A imagem cobre toda a carta */
-    background-position: center; /* A imagem fica centralizada */
+    transform: rotateY(180deg);
+    background-size: cover;
+    background-position: center;
 }
 
 /* Estilo do botão de reiniciar */
 #restart-button {
-    margin-top: 25px;
+    margin-top: 10px;
     padding: 12px 25px;
     font-size: 1.2rem;
     color: white;
-    background-color: #28a745;
+    background-color: #e67e22; /* Laranja */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -98,5 +96,17 @@ h1 {
 }
 
 #restart-button:hover {
-    background-color: #218838;
+    background-color: #d35400;
 }
+
+/* NOVO: Estilo para a mensagem de vitória */
+#win-message {
+    text-align: center;
+    color: #2ecc71; /* Verde */
+    font-size: 1.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
